@@ -1,6 +1,6 @@
-# 🛡️ TENET Agent – Setup & Deployment Guide
+# 🛡️ TENET Agent - Setup & Deployment Guide
 
-A self-hosted AI agent for `AI-Cyber-Defender` that reviews PRs and autonomously fixes issues.
+A self-hosted AI agent for `Tenet-AI` that reviews PRs and autonomously fixes issues.
 
 ---
 
@@ -8,9 +8,9 @@ A self-hosted AI agent for `AI-Cyber-Defender` that reviews PRs and autonomously
 
 ### Step 1 — Copy files into your repo
 
-Copy the following files from this directory into your `AI-Cyber-Defender` repository, preserving the directory structure:
-
-```
+Copy the following files from this directory into your `Tenet-AI` repository,
+preserving the directory structure:
+```text
 .github/
 ├── workflows/
 │   ├── tenet-pr-review.yml       ← PR reviewer workflow
@@ -37,6 +37,7 @@ Copy the following files from this directory into your `AI-Cyber-Defender` repos
 ### Step 3 — Create the `tenet-agent` label (optional but recommended)
 
 Go to **Issues** → **Labels** → **New label**:
+
 - Name: `tenet-agent`
 - Color: `#0075ca`
 - Description: `Managed by TENET Agent`
@@ -44,7 +45,6 @@ Go to **Issues** → **Labels** → **New label**:
 Also create `🚨 security` label if it doesn't exist.
 
 ### Step 4 — Push and test
-
 ```bash
 git add .github/
 git commit -m "feat: add TENET Agent (issue #44)"
@@ -56,11 +56,12 @@ git push
 ## 🎮 Usage
 
 ### Mode 1: Automatic PR Review
-Every time a PR is opened or updated → TENET Agent automatically posts a security review.
 
+Every time a PR is opened or updated → TENET Agent automatically posts a security review.
 No action needed. Just open a PR.
 
 ### Mode 2: Issue Auto-Fix (Maintainers Only)
+
 1. Find any open issue
 2. Comment (as a maintainer): `/tenet fix`
 3. TENET Agent will:
@@ -76,30 +77,31 @@ No action needed. Just open a PR.
 
 ## 🔐 Permission Model
 
-| Action | Who can trigger it |
-|---|---|
-| PR review | Automatic — any PR |
-| `/tenet fix` | **Admin or Write** collaborators only |
-| Push branch + open PR | `GITHUB_TOKEN` (scoped to the Actions runner) |
+| Action               | Who can trigger it                        |
+| -------------------- | ----------------------------------------- |
+| PR review            | Automatic — any PR                        |
+| `/tenet fix`         | **Admin or Write** collaborators only     |
+| Push branch + open PR| `GITHUB_TOKEN` (scoped to Actions runner) |
 
 ---
 
 ## 🔧 Configuration
 
 Edit `.github/tenet_agent/prompts.py` to customize:
+
 - **PR review focus** — add/remove security checks
 - **Code style preferences** — tell the LLM your coding standards
 - **Issue solver context** — add project-specific guidelines
 
 To switch to **OpenAI GPT-4o** instead of Gemini:
+
 1. In `utils.py`, replace `get_llm_client()` to use the `openai` library
 2. Rename the secret to `OPENAI_API_KEY` (or keep `TENET_AI_KEY`)
 
 ---
 
 ## 🏗️ Architecture
-
-```
+```text
 issue_comment event (/tenet fix)
         │
         ▼
