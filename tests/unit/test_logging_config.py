@@ -28,9 +28,10 @@ class TestSetupLogging:
 
     def test_default_log_level_is_info(self):
         """Test that default log level is INFO when LOG_LEVEL env var is not set."""
-        os.environ.pop("LOG_LEVEL", None)
-        logger = setup_logging("test_default_level")
-        assert logger.level == logging.INFO
+        with patch.dict(os.environ, {}, clear=False):
+            os.environ.pop("LOG_LEVEL", None)
+            logger = setup_logging("test_default_level")
+            assert logger.level == logging.INFO
 
     def test_log_level_from_environment(self):
         """Test that log level is set from LOG_LEVEL environment variable."""
@@ -94,6 +95,7 @@ class TestSetupLogging:
     def test_log_format_contains_required_fields(self):
         """Test that log formatter contains timestamp, name, level, and message."""
         logger = setup_logging("test_format")
+        formatter_found = False
         for handler in logger.handlers:
             if handler.formatter:
                 fmt = handler.formatter._fmt
@@ -101,7 +103,9 @@ class TestSetupLogging:
                 assert "%(name)s" in fmt
                 assert "%(levelname)s" in fmt
                 assert "%(message)s" in fmt
+                formatter_found = True
                 break
+        assert formatter_found, "No formatter found on any handler"
 
 
 class TestSensitiveDataLogging:
@@ -115,14 +119,14 @@ class TestSensitiveDataLogging:
         assert "token" not in logger.name.lower()
 
     def test_logger_functional_for_normal_messages(self):
-     """Test that logger works normally without raising exceptions."""
-    logger = setup_logging("test_sensitive")
-    try:
-        logger.info("User logged in successfully")
-        logger.warning("Test warning")
-        logger.error("Test error")
-    except Exception as e:
-        pytest.fail(f"Logger raised an exception: {e}")
+        """Test that logger works normally without raising exceptions."""
+        logger = setup_logging("test_sensitive")
+        try:
+            logger.info("User logged in successfully")
+            logger.warning("Test warning")
+            logger.error("Test error")
+        except Exception as e:
+            pytest.fail(f"Logger raised an exception: {e}")
 
 
 class TestLogLevelCaseInsensitive:
